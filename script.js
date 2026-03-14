@@ -53,7 +53,8 @@ function getCover(manga) {
     if (manga.relationships[i].type === "cover_art") { rel = manga.relationships[i]; break; }
   }
   if (!rel) return "https://placehold.co/130x190?text=No+Cover";
-  return "/covers/" + manga.id + "/" + rel.attributes.fileName + ".256.jpg";
+  var imgUrl = "https://uploads.mangadex.org/covers/" + manga.id + "/" + rel.attributes.fileName + ".256.jpg";
+  return "/api/proxy?url=" + encodeURIComponent(imgUrl);
 }
 
 async function openManga(id, title, cover) {
@@ -99,7 +100,7 @@ async function openReader(chapterId, title) {
     var html = "";
     for (var i = 0; i < imgs.length; i++) {
       var imgUrl = base + "/data/" + hash + "/" + imgs[i];
-      html += '<img src="/imgproxy?url=' + encodeURIComponent(imgUrl) + '" loading="lazy" onerror="this.src=\'https://placehold.co/400x600?text=Error\'"/>';
+      html += '<img src="/api/proxy?url=' + encodeURIComponent(imgUrl) + '" loading="lazy" onerror="this.src=\'https://placehold.co/400x600?text=Error\'"/>';
     }
     document.getElementById("pages").innerHTML = html;
   } catch(e) {
@@ -120,4 +121,4 @@ function show(section) {
 
 function escHtml(str) {
   return str.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-}
+      }
