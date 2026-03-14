@@ -86,7 +86,7 @@ async function openReader(chapterId, title) {
     const hash = data.chapter.hash;
     const imgs = data.chapter.data;
     document.getElementById("pages").innerHTML = imgs.map(img =>
-      `<img src="${base}/data/${hash}/${img}" loading="lazy" onerror="this.src='https://placehold.co/400x600?text=Error'"/>`
+    `<img src="/imgproxy?url=${encodeURIComponent(`${base}/data/${hash}/${img}`)}" ` loading="lazy" onerror="this.src='https://placehold.co/400x600?text=Error'"/>`
     ).join("");
   } catch(e) {
     document.getElementById("pages").innerHTML = `<div class="loader">Gagal memuat halaman.</div>`;
