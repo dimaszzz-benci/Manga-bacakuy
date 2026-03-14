@@ -1,4 +1,4 @@
-const BASE = "https://api.mangadex.org";
+const BASE = "/api";
 
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
