@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MangaKu</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dark">
+
+  <header>
+    <h1>📖 MangaKu</h1>
+    <button id="toggleTheme">☀️ Light</button>
+  </header>
+
+  <main>
+    <section id="searchSection">
+      <input type="text" id="searchInput" placeholder="Cari manga..."/>
+      <button id="searchBtn">Cari</button>
+    </section>
+
+    <section id="results" class="card-grid"></section>
+
+    <section id="chapterList" class="hidden">
+      <button id="backToSearch">← Kembali</button>
+      <h2 id="mangaTitle"></h2>
+      <img id="mangaCover" src="" alt="cover"/>
+      <div id="chapters"></div>
+    </section>
+
+    <section id="readerSection" class="hidden">
+      <button id="backToChapters">← Chapter List</button>
+      <h3 id="chapterTitle"></h3>
+      <div id="pages"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
