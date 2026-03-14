@@ -46,7 +46,7 @@ function renderCards(mangas) {
 function getCover(manga) {
   const rel = manga.relationships?.find(r => r.type === "cover_art");
   if (!rel) return "https://placehold.co/130x190?text=No+Cover";
-  return `https://uploads.mangadex.org/covers/${manga.id}/${rel.attributes?.fileName}.256.jpg`;
+  return `/covers/${manga.id}/${rel.attributes?.fileName}.256.jpg`;
 }
 
 async function openManga(id, title, cover) {
