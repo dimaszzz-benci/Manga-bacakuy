@@ -1,11 +1,8 @@
-const PROXY = "https://corsproxy.io/?";
 const BASE = "https://api.mangadex.org";
 
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 const results = document.getElementById("results");
-const chapterList = document.getElementById("chapterList");
-const readerSection = document.getElementById("readerSection");
 const toggleTheme = document.getElementById("toggleTheme");
 
 let currentMangaId = "";
@@ -26,8 +23,7 @@ async function searchManga() {
   show("results");
 
   try {
-    const url = `${BASE}/manga?title=${encodeURIComponent(query)}&limit=20&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive`;
-    const res = await fetch(PROXY + encodeURIComponent(url));
+    const res = await fetch(`${BASE}/manga?title=${encodeURIComponent(query)}&limit=20&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive`);
     const data = await res.json();
     renderCards(data.data || []);
   } catch(e) {
@@ -61,8 +57,7 @@ async function openManga(id, title, cover) {
   show("chapterList");
 
   try {
-    const url = `${BASE}/manga/${id}/feed?translatedLanguage[]=en&order[chapter]=asc&limit=100`;
-    const res = await fetch(PROXY + encodeURIComponent(url));
+    const res = await fetch(`${BASE}/manga/${id}/feed?translatedLanguage[]=en&order[chapter]=asc&limit=100`);
     const data = await res.json();
     renderChapters(data.data || []);
   } catch(e) {
@@ -85,8 +80,7 @@ async function openReader(chapterId, title) {
   show("readerSection");
 
   try {
-    const url = `${BASE}/at-home/server/${chapterId}`;
-    const res = await fetch(PROXY + encodeURIComponent(url));
+    const res = await fetch(`${BASE}/at-home/server/${chapterId}`);
     const data = await res.json();
     const base = data.baseUrl;
     const hash = data.chapter.hash;
@@ -111,4 +105,4 @@ function show(section) {
 
 function escHtml(str) {
   return str.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-}
+  }
