@@ -1,4 +1,4 @@
-const PROXY = "https://api.allorigins.win/raw?url=";
+const PROXY = "https://corsproxy.io/?";
 const BASE = "https://api.mangadex.org";
 
 const searchInput = document.getElementById("searchInput");
@@ -10,14 +10,12 @@ const toggleTheme = document.getElementById("toggleTheme");
 
 let currentMangaId = "";
 
-// Theme
 toggleTheme.addEventListener("click", () => {
   document.body.classList.toggle("dark");
   document.body.classList.toggle("light");
   toggleTheme.textContent = document.body.classList.contains("dark") ? "☀️ Light" : "🌙 Dark";
 });
 
-// Search
 searchBtn.addEventListener("click", searchManga);
 searchInput.addEventListener("keydown", e => { if (e.key === "Enter") searchManga(); });
 
@@ -32,7 +30,7 @@ async function searchManga() {
     const res = await fetch(PROXY + encodeURIComponent(url));
     const data = await res.json();
     renderCards(data.data || []);
-  } catch {
+  } catch(e) {
     results.innerHTML = `<div class="loader">Gagal memuat. Coba lagi.</div>`;
   }
 }
@@ -55,7 +53,6 @@ function getCover(manga) {
   return `https://uploads.mangadex.org/covers/${manga.id}/${rel.attributes?.fileName}.256.jpg`;
 }
 
-// Open manga detail
 async function openManga(id, title, cover) {
   currentMangaId = id;
   document.getElementById("mangaTitle").textContent = title;
@@ -68,7 +65,7 @@ async function openManga(id, title, cover) {
     const res = await fetch(PROXY + encodeURIComponent(url));
     const data = await res.json();
     renderChapters(data.data || []);
-  } catch {
+  } catch(e) {
     document.getElementById("chapters").innerHTML = `<div class="loader">Gagal memuat chapter.</div>`;
   }
 }
@@ -82,7 +79,6 @@ function renderChapters(chapters) {
   }).join("");
 }
 
-// Reader
 async function openReader(chapterId, title) {
   document.getElementById("chapterTitle").textContent = title;
   document.getElementById("pages").innerHTML = `<div class="loader">Memuat halaman...</div>`;
@@ -98,12 +94,11 @@ async function openReader(chapterId, title) {
     document.getElementById("pages").innerHTML = imgs.map(img =>
       `<img src="${base}/data/${hash}/${img}" loading="lazy" onerror="this.src='https://placehold.co/400x600?text=Error'"/>`
     ).join("");
-  } catch {
+  } catch(e) {
     document.getElementById("pages").innerHTML = `<div class="loader">Gagal memuat halaman.</div>`;
   }
 }
 
-// Navigation
 document.getElementById("backToSearch").addEventListener("click", () => show("results"));
 document.getElementById("backToChapters").addEventListener("click", () => show("chapterList"));
 
