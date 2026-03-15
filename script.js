@@ -6,7 +6,7 @@ const results = document.getElementById("results");
 const toggleTheme = document.getElementById("toggleTheme");
 
 let currentMangaId = "";
-let currentGenre = "";
+let currentLang = "id";
 
 const GENRES = [
   "Action","Adventure","Comedy","Drama","Fantasy","Horror",
@@ -37,11 +37,7 @@ var genreTagsEl = document.getElementById("genreTags");
 var allBtn = document.createElement("button");
 allBtn.className = "genre-btn active";
 allBtn.textContent = "Semua";
-allBtn.onclick = function() {
-  currentGenre = "";
-  setActiveGenre(allBtn);
-  loadHomePage();
-};
+allBtn.onclick = function() { setActiveGenre(allBtn); loadHomePage(); };
 genreTagsEl.appendChild(allBtn);
 
 for (var i = 0; i < GENRES.length; i++) {
@@ -49,11 +45,7 @@ for (var i = 0; i < GENRES.length; i++) {
     var btn = document.createElement("button");
     btn.className = "genre-btn";
     btn.textContent = genre;
-    btn.onclick = function() {
-      currentGenre = GENRE_IDS[genre];
-      setActiveGenre(btn);
-      loadByGenre(currentGenre);
-    };
+    btn.onclick = function() { setActiveGenre(btn); loadByGenre(GENRE_IDS[genre]); };
     genreTagsEl.appendChild(btn);
   })(GENRES[i]);
 }
@@ -63,6 +55,21 @@ function setActiveGenre(activeBtn) {
   for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
   activeBtn.classList.add("active");
 }
+
+// Lang switch
+document.getElementById("btnLangId").onclick = function() {
+  currentLang = "id";
+  document.getElementById("btnLangId").classList.add("lang-active");
+  document.getElementById("btnLangEn").classList.remove("lang-active");
+  loadChapters(currentMangaId);
+};
+
+document.getElementById("btnLangEn").onclick = function() {
+  currentLang = "en";
+  document.getElementById("btnLangEn").classList.add("lang-active");
+  document.getElementById("btnLangId").classList.remove("lang-active");
+  loadChapters(currentMangaId);
+};
 
 toggleTheme.addEventListener("click", () => {
   document.body.classList.toggle("dark");
@@ -74,9 +81,21 @@ searchBtn.addEventListener("click", searchManga);
 searchInput.addEventListener("keydown", e => { if (e.key === "Enter") searchManga(); });
 window.addEventListener("load", loadHomePage);
 
+// Navigation
+document.getElementById("backToHome").onclick = function() { show("homePage"); };
+document.getElementById("backToDetail").onclick = function() { show("detailPage"); };
+
+function show(page) {
+  document.getElementById("homePage").classList.add("hidden");
+  document.getElementById("detailPage").classList.add("hidden");
+  document.getElementById("readerPage").classList.add("hidden");
+  document.getElementById(page).classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+
 async function loadHomePage() {
   results.innerHTML = '<div class="loader">Memuat manga populer...</div>';
-  show("results");
+  show("homePage");
   try {
     const res = await fetch(BASE + "/manga?limit=30&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&order[followedCount]=desc&availableTranslatedLanguage[]=id&availableTranslatedLanguage[]=en");
     const data = await res.json();
@@ -88,7 +107,6 @@ async function loadHomePage() {
 
 async function loadByGenre(genreId) {
   results.innerHTML = '<div class="loader">Memuat manga...</div>';
-  show("results");
   try {
     const res = await fetch(BASE + "/manga?limit=30&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&order[followedCount]=desc&includedTags[]=" + genreId + "&availableTranslatedLanguage[]=id&availableTranslatedLanguage[]=en");
     const data = await res.json();
@@ -102,7 +120,7 @@ async function searchManga() {
   const query = searchInput.value.trim();
   if (!query) return;
   results.innerHTML = '<div class="loader">Mencari manga...</div>';
-  show("results");
+  show("homePage");
   try {
     const res = await fetch(BASE + "/manga?title=" + encodeURIComponent(query) + "&limit=20&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&availableTranslatedLanguage[]=id&availableTranslatedLanguage[]=en");
     const data = await res.json();
@@ -116,18 +134,13 @@ function getGenreNames(manga) {
   var tags = manga.attributes.tags || [];
   var genres = [];
   for (var i = 0; i < tags.length; i++) {
-    if (tags[i].attributes.group === "genre") {
-      genres.push(tags[i].attributes.name.en || "");
-    }
+    if (tags[i].attributes.group === "genre") genres.push(tags[i].attributes.name.en || "");
   }
   return genres.slice(0, 3);
 }
 
 function renderCards(mangas, label) {
-  if (!mangas.length) {
-    results.innerHTML = '<div class="loader">Manga tidak ditemukan.</div>';
-    return;
-  }
+  if (!mangas.length) { results.innerHTML = '<div class="loader">Tidak ditemukan.</div>'; return; }
   var html = '<h2 class="section-title">' + label + '</h2><div class="card-grid">';
   for (var i = 0; i < mangas.length; i++) {
     var m = mangas[i];
@@ -135,11 +148,9 @@ function renderCards(mangas, label) {
     var cover = getCover(m);
     var genres = getGenreNames(m);
     var genreHtml = "";
-    for (var g = 0; g < genres.length; g++) {
-      genreHtml += '<span class="genre-tag">' + genres[g] + '</span>';
-    }
+    for (var g = 0; g < genres.length; g++) genreHtml += '<span class="genre-tag">' + genres[g] + '</span>';
     html += '<div class="card" onclick="openManga(\'' + m.id + '\',\'' + escHtml(title) + '\',\'' + cover + '\')">';
-    html += '<img src="' + cover + '" loading="lazy" onerror="this.src=\'https://placehold.co/140x210?text=No+Cover\'"/>';
+    html += '<img src="' + cover + '" loading="lazy" onerror="this.src=\'https://placehold.co/130x195?text=No+Cover\'"/>';
     html += '<div class="card-info"><p class="card-title">' + escHtml(title) + '</p>';
     html += '<div class="genre-list">' + genreHtml + '</div></div></div>';
   }
@@ -152,27 +163,30 @@ function getCover(manga) {
   for (var i = 0; i < manga.relationships.length; i++) {
     if (manga.relationships[i].type === "cover_art") { rel = manga.relationships[i]; break; }
   }
-  if (!rel || !rel.attributes) return "https://placehold.co/140x210?text=No+Cover";
+  if (!rel || !rel.attributes) return "https://placehold.co/130x195?text=No+Cover";
   var imgUrl = "https://uploads.mangadex.org/covers/" + manga.id + "/" + rel.attributes.fileName + ".256.jpg";
   return "/api/proxy?url=" + encodeURIComponent(imgUrl);
 }
 
 async function openManga(id, title, cover) {
   currentMangaId = id;
+  currentLang = "id";
+  document.getElementById("btnLangId").classList.add("lang-active");
+  document.getElementById("btnLangEn").classList.remove("lang-active");
   document.getElementById("mangaTitle").textContent = title;
   document.getElementById("mangaCover").src = cover;
   document.getElementById("mangaDesc").textContent = "";
   document.getElementById("mangaGenres").innerHTML = "";
   document.getElementById("chapters").innerHTML = '<div class="loader">Memuat chapter...</div>';
   document.getElementById("recGrid").innerHTML = "";
-  show("chapterList");
+  show("detailPage");
 
   try {
-    const detRes = await fetch(BASE + "/manga/" + id + "?includes[]=cover_art");
+    const detRes = await fetch(BASE + "/manga/" + id);
     const detData = await detRes.json();
     var m = detData.data;
     var desc = m.attributes.description.id || m.attributes.description.en || Object.values(m.attributes.description || {})[0] || "Tidak ada deskripsi.";
-    document.getElementById("mangaDesc").textContent = desc.substring(0, 200) + (desc.length > 200 ? "..." : "");
+    document.getElementById("mangaDesc").textContent = desc.substring(0, 250) + (desc.length > 250 ? "..." : "");
     var tags = m.attributes.tags || [];
     var genreHtml = "";
     var firstGenreTag = null;
@@ -186,23 +200,15 @@ async function openManga(id, title, cover) {
     if (firstGenreTag) loadRecommendations(firstGenreTag, id);
   } catch(e) {}
 
-  // Ambil chapter - prioritas ID dulu, fallback EN
+  loadChapters(id);
+}
+
+async function loadChapters(id) {
+  document.getElementById("chapters").innerHTML = '<div class="loader">Memuat chapter...</div>';
   try {
-    // Coba ID dulu
-    var resId = await fetch(BASE + "/manga/" + id + "/feed?translatedLanguage[]=id&order[chapter]=asc&limit=500");
-    var dataId = await resId.json();
-    var chaptersId = dataId.data || [];
-
-    // Kalau ID kosong, ambil EN
-    var chaptersEn = [];
-    if (chaptersId.length === 0) {
-      var resEn = await fetch(BASE + "/manga/" + id + "/feed?translatedLanguage[]=en&order[chapter]=asc&limit=500");
-      var dataEn = await resEn.json();
-      chaptersEn = dataEn.data || [];
-    }
-
-    var allChapters = chaptersId.length > 0 ? chaptersId : chaptersEn;
-    renderChapters(allChapters);
+    const res = await fetch(BASE + "/manga/" + id + "/feed?translatedLanguage[]=" + currentLang + "&order[chapter]=asc&limit=500");
+    const data = await res.json();
+    renderChapters(data.data || []);
   } catch(e) {
     document.getElementById("chapters").innerHTML = '<div class="loader">Gagal memuat chapter.</div>';
   }
@@ -210,7 +216,7 @@ async function openManga(id, title, cover) {
 
 async function loadRecommendations(genreId, excludeId) {
   try {
-    const res = await fetch(BASE + "/manga?limit=6&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&order[followedCount]=desc&includedTags[]=" + genreId + "&availableTranslatedLanguage[]=id&availableTranslatedLanguage[]=en");
+    const res = await fetch(BASE + "/manga?limit=6&includes[]=cover_art&contentRating[]=safe&contentRating[]=suggestive&order[followedCount]=desc&includedTags[]=" + genreId);
     const data = await res.json();
     var mangas = (data.data || []).filter(function(m) { return m.id !== excludeId; });
     if (!mangas.length) return;
@@ -220,7 +226,7 @@ async function loadRecommendations(genreId, excludeId) {
       var title = m.attributes.title.en || Object.values(m.attributes.title)[0] || "No Title";
       var cover = getCover(m);
       html += '<div class="card" onclick="openManga(\'' + m.id + '\',\'' + escHtml(title) + '\',\'' + cover + '\')">';
-      html += '<img src="' + cover + '" loading="lazy" onerror="this.src=\'https://placehold.co/140x210?text=No+Cover\'"/>';
+      html += '<img src="' + cover + '" loading="lazy" onerror="this.src=\'https://placehold.co/130x195?text=No+Cover\'"/>';
       html += '<div class="card-info"><p class="card-title">' + escHtml(title) + '</p></div></div>';
     }
     document.getElementById("recGrid").innerHTML = html;
@@ -229,36 +235,31 @@ async function loadRecommendations(genreId, excludeId) {
 
 function renderChapters(chapters) {
   if (!chapters.length) {
-    document.getElementById("chapters").innerHTML = '<div class="loader">Tidak ada chapter tersedia.</div>';
+    var other = currentLang === "id" ? "🇬🇧 English" : "🇮🇩 Indonesia";
+    document.getElementById("chapters").innerHTML = '<div class="loader">Tidak ada chapter ' + (currentLang === "id" ? "Indonesia" : "English") + '.<br>Coba ganti ke ' + other + '</div>';
     return;
   }
-  // Hapus duplikat
   var seen = {};
   var filtered = [];
   for (var i = 0; i < chapters.length; i++) {
     var num = chapters[i].attributes.chapter || "?";
-    if (!seen[num]) {
-      seen[num] = true;
-      filtered.push(chapters[i]);
-    }
+    if (!seen[num]) { seen[num] = true; filtered.push(chapters[i]); }
   }
-  var lang = filtered[0].attributes.translatedLanguage || "";
-  var langLabel = lang === "id" ? "🇮🇩 Bahasa Indonesia" : "🇬🇧 Bahasa Inggris";
-  var html = '<p class="chapter-count">' + filtered.length + ' Chapter • ' + langLabel + '</p>';
+  var html = '<p class="chapter-count">' + filtered.length + ' Chapter • ' + (currentLang === "id" ? "🇮🇩 Bahasa Indonesia" : "🇬🇧 Bahasa Inggris") + '</p><div class="chapter-list">';
   for (var i = 0; i < filtered.length; i++) {
     var c = filtered[i];
     var num = c.attributes.chapter || "?";
     var ttl = c.attributes.title ? " - " + c.attributes.title : "";
-    html += '<div class="chapter-item" onclick="openReader(\'' + c.id + '\',\'Chapter ' + num + escHtml(ttl) + '\')">';
-    html += '<span>Chapter ' + num + escHtml(ttl) + '</span></div>';
+    html += '<div class="chapter-item" onclick="openReader(\'' + c.id + '\',\'Chapter ' + num + escHtml(ttl) + '\')"><span>Chapter ' + num + escHtml(ttl) + '</span><span>▶</span></div>';
   }
+  html += '</div>';
   document.getElementById("chapters").innerHTML = html;
 }
 
 async function openReader(chapterId, title) {
   document.getElementById("chapterTitle").textContent = title;
   document.getElementById("pages").innerHTML = '<div class="loader">Memuat halaman...</div>';
-  show("readerSection");
+  show("readerPage");
   try {
     const res = await fetch(BASE + "/at-home/server/" + chapterId);
     const data = await res.json();
@@ -276,17 +277,6 @@ async function openReader(chapterId, title) {
   }
 }
 
-document.getElementById("backToSearch").addEventListener("click", function() { show("results"); });
-document.getElementById("backToChapters").addEventListener("click", function() { show("chapterList"); });
-
-function show(section) {
-  var ids = ["results","chapterList","readerSection"];
-  for (var i = 0; i < ids.length; i++) {
-    document.getElementById(ids[i]).classList.add("hidden");
-  }
-  document.getElementById(section).classList.remove("hidden");
-}
-
 function escHtml(str) {
   return String(str).replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-      }
+  }
