@@ -144,3 +144,48 @@ body.light .chapter-item { background: #e9e9f0; }
   font-size: 1rem;
   color: #888;
 }
+.section-title {
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+  color: #6c63ff;
+}
+
+.card-info { padding: 8px; }
+
+.card-title {
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.genre-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.genre-tag {
+  background: #6c63ff;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.chapter-count {
+  color: #888;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.lang-badge {
+  float: right;
+  background: #2a2a3e;
+  color: #aaa;
+  font-size: 0.7rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+body.light .lang-badge { background: #ddd; color: #555; }
+body.light .chapter-count { color: #666; }
