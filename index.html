@@ -13,8 +13,9 @@
     <button id="toggleTheme">☀️ Light</button>
   </header>
 
-  <main>
-    <section id="searchSection">
+  <!-- Halaman Utama -->
+  <section id="homePage">
+    <div class="search-wrap">
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Cari manga..."/>
         <button id="searchBtn">Cari</button>
@@ -23,33 +24,42 @@
         <p class="filter-label">Filter Genre:</p>
         <div id="genreTags"></div>
       </div>
-    </section>
+    </div>
+    <div id="results"></div>
+  </section>
 
-    <section id="results"></section>
-
-    <section id="chapterList" class="hidden">
-      <button id="backToSearch">← Kembali</button>
-      <div class="manga-detail">
-        <img id="mangaCover" src="" alt="cover"/>
-        <div class="manga-meta">
-          <h2 id="mangaTitle"></h2>
-          <div id="mangaGenres"></div>
-          <p id="mangaDesc"></p>
+  <!-- Halaman Detail Manga -->
+  <section id="detailPage" class="hidden">
+    <div class="detail-header">
+      <button id="backToHome">← Kembali</button>
+    </div>
+    <div class="manga-hero">
+      <img id="mangaCover" src="" alt="cover"/>
+      <div class="manga-meta">
+        <h2 id="mangaTitle"></h2>
+        <div id="mangaGenres"></div>
+        <p id="mangaDesc"></p>
+        <div class="lang-switch">
+          <button id="btnLangId" class="lang-active">🇮🇩 Indonesia</button>
+          <button id="btnLangEn">🇬🇧 English</button>
         </div>
       </div>
-      <div id="chapters"></div>
-      <div id="recommendations">
-        <h3 class="section-title">📚 Rekomendasi Serupa</h3>
-        <div id="recGrid" class="card-grid"></div>
-      </div>
-    </section>
+    </div>
+    <div id="chapters"></div>
+    <div id="recommendations">
+      <h3 class="section-title">📚 Rekomendasi Serupa</h3>
+      <div id="recGrid" class="card-grid"></div>
+    </div>
+  </section>
 
-    <section id="readerSection" class="hidden">
-      <button id="backToChapters">← Chapter List</button>
-      <h3 id="chapterTitle"></h3>
-      <div id="pages"></div>
-    </section>
-  </main>
+  <!-- Halaman Reader -->
+  <section id="readerPage" class="hidden">
+    <div class="reader-header">
+      <button id="backToDetail">← Chapter List</button>
+      <span id="chapterTitle"></span>
+    </div>
+    <div id="pages"></div>
+  </section>
 
   <script src="script.js"></script>
 </body>
