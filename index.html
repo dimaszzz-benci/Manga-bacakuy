@@ -15,17 +15,33 @@
 
   <main>
     <section id="searchSection">
-      <input type="text" id="searchInput" placeholder="Cari manga..."/>
-      <button id="searchBtn">Cari</button>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Cari manga..."/>
+        <button id="searchBtn">Cari</button>
+      </div>
+      <div id="genreFilter">
+        <p class="filter-label">Filter Genre:</p>
+        <div id="genreTags"></div>
+      </div>
     </section>
 
-    <section id="results" class="card-grid"></section>
+    <section id="results"></section>
 
     <section id="chapterList" class="hidden">
       <button id="backToSearch">← Kembali</button>
-      <h2 id="mangaTitle"></h2>
-      <img id="mangaCover" src="" alt="cover"/>
+      <div class="manga-detail">
+        <img id="mangaCover" src="" alt="cover"/>
+        <div class="manga-meta">
+          <h2 id="mangaTitle"></h2>
+          <div id="mangaGenres"></div>
+          <p id="mangaDesc"></p>
+        </div>
+      </div>
       <div id="chapters"></div>
+      <div id="recommendations">
+        <h3 class="section-title">📚 Rekomendasi Serupa</h3>
+        <div id="recGrid" class="card-grid"></div>
+      </div>
     </section>
 
     <section id="readerSection" class="hidden">
